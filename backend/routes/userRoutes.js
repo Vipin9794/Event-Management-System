@@ -1,33 +1,39 @@
-const express = require('express');
+const express = require("express");
 const {
   addToCart,
-  removeFromCart,
-  viewCart,
-  makePayment,
-  cancelOrder,
   addToGuestList,
-  updateGuestList,
   removeFromGuestList,
   checkOrderStatus,
-} = require('../controllers/userController');
+  viewAllProducts,
+  getUserCart,
+  removeFromCart,  // ✅ Added Product Route
+} = require("../controllers/userController");
+const { placeOrder } = require("../controllers/orderController");
+
 
 const router = express.Router();
 
-// Cart routes
-router.post('/cart', addToCart);
-router.delete('/cart/:productId', removeFromCart);
-router.get('/cart', viewCart);
+// Product Routes
+router.get("/products", viewAllProducts);  //  Fetch All Products
 
-// Payment routes
-router.post('/payment', makePayment);
-router.post('/cancel', cancelOrder);
+// 🛒 Add to Cart Route (POST)
+router.post("/cart/add", addToCart);
+router.delete("/cart/remove", removeFromCart);
 
-// Guest List routes
-router.post('/guest-list', addToGuestList);
-router.put('/guest-list/update', updateGuestList);
-router.delete('/guest-list/:vendorId', removeFromGuestList);
+// 🛒 Get User's Cart Route (GET)
+router.get("/cart", getUserCart);
 
-// Order Status routes
-router.get('/order-status', checkOrderStatus);
+
+// Guest List Routes
+router.post("/guest-list/add", addToGuestList);
+router.delete("/guest-list/remove/:guestId", removeFromGuestList);
+
+
+router.post("/place-order", placeOrder);
+// router.get("/my-orders/:userId", orderController.getUserOrders);
+
+
+// Order Status Route
+router.get("/order/status/:orderId", checkOrderStatus);
 
 module.exports = router;

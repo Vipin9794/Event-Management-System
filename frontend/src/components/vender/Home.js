@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; // For navigation
+import "./VendorDashboard.css";
 
 function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="container">
+    <div className="vendor-dashboard  container">
       <h2 className="text-center mt-4">Vendor Dashboard</h2>
       <div className="d-flex flex-column align-items-center mt-5">
         <button
@@ -14,23 +15,18 @@ function Home() {
         >
           Add New Item
         </button>
-        <button
-          className="btn btn-warning mb-3"
-          onClick={() => navigate("/delete-item")}
-        >
-          Delete Item
-        </button>
+       
         <button
           className="btn btn-success mb-3"
-          onClick={() => navigate("/view-product")}
+          onClick={() => navigate("/view-product" , { state: { products: [] } })}
         >
           View Products
         </button>
         <button
           className="btn btn-info"
-          onClick={() => navigate("/product-status")}
+          onClick={() => navigate("/view-orders")}
         >
-          Check Product Status
+          View Orders
         </button>
       </div>
     </div>

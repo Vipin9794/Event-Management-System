@@ -1,5 +1,6 @@
 const express = require('express');
 const {
+  getAllData,
   addUpdateUser,
   addUpdateVendor,
   addMembership,
@@ -7,6 +8,8 @@ const {
 } = require('../controllers/adminController');
 
 const router = express.Router();
+
+router.get("/all-data", getAllData);
 
 // Add/Update User
 router.post("/add-update-user", addUpdateUser);
@@ -18,6 +21,6 @@ router.post('/add-update-vendor', addUpdateVendor);
 router.post('/add-membership', addMembership);
 
 // Update Membership
-router.post('/update-membership', updateMembership);
+router.put('/update-membership', updateMembership);
 
 module.exports = router;

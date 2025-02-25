@@ -1,242 +1,212 @@
-// const User = require('../models/User');
-// const Product = require('../models/Product');
-// const Vendor = require('../models/Vendor');
-const Cart = require('../models/Cart'); // Cart model
-const Order = require('../models/Order'); // Order model
-const GuestList = require('../models/GuestList'); // Guest list model
-const Product = require('../models/Product'); // Import Product model
+const mongoose = require("mongoose");
+const Cart = require("../models/Cart");
+const Product = require("../models/Product");
+const GuestList = require("../models/GuestList");
+const Order = require("../models/Order");
+const Authentication= require("../models/Authentication");
 
-
-// Add item to cart
-const addToCart = async (req, res) => {
-  const { userId, productId, quantity } = req.body;
-
-  try {
-    let cart = await Cart.findOne({ userId });
-
-    if (!cart) {
-      // If cart doesn't exist, create a new one
-      cart = new Cart({ userId, items: [{ productId, quantity }] });
-      await cart.save();
-      return res.status(201).json(cart);
-    }
-
-    // If cart exists, add item
-    cart.items.push({ productId, quantity });
-    await cart.save();
-
-    res.status(200).json(cart);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Remove item from cart
-const removeFromCart = async (req, res) => {
-  const { productId } = req.params;
-  const { userId } = req.body;
-
-  try {
-    const cart = await Cart.findOne({ userId });
-
-    if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
-    }
-
-    cart.items = cart.items.filter(item => item.productId.toString() !== productId);
-    await cart.save();
-
-    res.status(200).json(cart);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// View cart items
-const viewCart = async (req, res) => {
-  const { userId } = req.query;
-
-  // Ensure that the userId is valid (trim any unwanted characters)
-  const cleanUserId = userId.trim();
-
-  try {
-    // Query the cart for the specific user
-    const cart = await Cart.findOne({ userId: cleanUserId }).populate({
-      path: 'items.productId', // Assuming 'productId' is a reference to the Product model
-      select: 'name price image' // You can specify which fields to populate (e.g., name, price, image)
-    });
-
-    if (!cart) {
-      return res.status(404).json({ message: 'Cart is empty or not found' });
-    }
-
-    res.status(200).json(cart); // Return the cart with populated items
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-
-// Make payment
-// const makePayment = async (req, res) => {
-//   const { userId, amount } = req.body;
-
+// 🛒 Add to Cart
+// const addToCart = async (req, res) => {
 //   try {
-//     const order = new Order({ userId, amount, status: 'Paid' });
-//     await order.save();
+//     const { userId, productId ,quantity} = req.body;
 
-//     // Clear the cart after payment
-//     await Cart.deleteOne({ userId });
+//     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+//       return res.status(400).json({ message: "Invalid userId or productId" });
+//     }
+//     const user = await Authentication.findById(userId);
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
 
-//     res.status(200).json({ message: 'Payment successful', order });
+//     let cart = await Cart.findOne({ userId });
+
+//     if (!cart) {
+//       cart = new Cart({
+//         userId,
+//         items: [{ productId: product._id, quantity: 1, price: product.price }],
+//         totalPrice: product.price,
+//       });
+//     } else {
+//       const existingItem = cart.items.find(item => item.productId.toString() === productId);
+
+//       if (existingItem) {
+//         existingItem.quantity += 1;
+//       } else {
+//         cart.items.push({ productId: product._id, quantity: 1, price: product.price });
+//       }
+
+//       // ✅ Corrected Total Price Calculation
+//       cart.totalPrice = cart.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+//     }
+
+//     await cart.save();
+//     const updatedCart = await Cart.findOne({ userId }).populate("items.productId");
+//     res.status(200).json({ message: "Cart updated", cart: updatedCart });
 //   } catch (error) {
-//     res.status(500).json({ message: error.message });
+//     console.error("Error adding to cart:", error);
+//     res.status(500).json({ message: "Internal server error" });
 //   }
 // };
-// const Order = require('../models/Order');  // Import Order model
 
-const makePayment = async (req, res) => {
-  const { userId, amount, items } = req.body;
-
-  if (!userId || !amount) {
-    return res.status(400).json({ message: 'userId and amount are required' });
-  }
-
+const addToCart = async (req, res) => {
   try {
-    // Create a new order
-    const order = new Order({
-      userId,
-      amount,
-      items,
-    });
+    const { userId, productId, quantity } = req.body;
 
-    // Save the order to the database
-    const savedOrder = await order.save();
+    if (!userId || !productId ) {
+      return res.status(400).json({ message: "User ID and Product ID are required" });
+    }
 
-    res.status(201).json(savedOrder);
+    const user = await Authentication.findById(userId);
+    console.log("User Found:", user); // 🔍 Debugging
+ // 🛑 DEBUGGING - Check if user has cart field
+ 
+ if (!user.cart) {
+  user.cart = []; // 🛠️ Initialize cart if it's undefined
+}
+// const vendor = await Authentication.findById(vendorId);
+// if (!vendor.cart) {
+//   vendor.cart = []; // 🛠️ Initialize cart if it's undefined
+// }
+    const product = await Product.findById(productId);
+    console.log("Product Found:", product); 
+
+    if (!user || !product) {
+      return res.status(404).json({ message: "User or Product not found" });
+    }
+
+    // Check if item already exists in cart
+    const cartItem = user.cart.find(item => item.productId.toString() === productId);
+
+    if (cartItem) {
+      cartItem.quantity += quantity; // Increase quantity if already in cart
+    } else {
+      user.cart.push({ productId, quantity });
+    }
+
+    await user.save();
+    console.log("Cart After Adding Product:", user.cart); // 🛠 Debugging
+    
+
+    
+    res.json({ message: "Product added to cart", cart: user.cart });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Server Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// Cancel order
-const cancelOrder = async (req, res) => {
-  const { userId, orderId } = req.body;
 
+
+// 🛍 Get User Cart
+const getUserCart = async (req, res) => {
   try {
-    const order = await Order.findById(orderId);
+    const { userId } = req.query;
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
     }
 
-    if (order.userId.toString() !== userId) {
-      return res.status(403).json({ message: 'Unauthorized' });
+    // 🛠 Fix: User variable ko properly define karein
+    const user = await Authentication.findById(userId).populate("cart.productId");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    order.status = 'Cancelled';
-    await order.save();
+    console.log("Cart Fetched From DB:", user.cart); // 🛠 Debugging ke liye
 
-    res.status(200).json({ message: 'Order cancelled', order });
+    res.json({ items: user.cart });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching cart:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// Add to guest list
-// In controllers/userController.js
+const removeFromCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+      return res.status(400).json({ message: "User ID and Product ID are required." });
+    }
+
+    const user = await Authentication.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Filter out the product from the cart
+    user.cart = user.cart.filter((item) => item.productId.toString() !== productId);
+
+    await user.save();
+
+    res.json({ message: "Item removed from cart successfully.", cart: user.cart });
+  } catch (error) {
+    console.error("Error removing item from cart:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 
-// Add a guest to the list
+// 📦 View All Products
+const viewAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products.length ? products : { message: "No products available" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// 🎟 Add to Guest List
 const addToGuestList = async (req, res) => {
-  const { userId, vendorId } = req.body;
-
-  if (!userId || !vendorId) {
-    return res.status(400).json({ message: 'userId and vendorId are required' });
-  }
-
   try {
-    const newGuest = new GuestList({
-      userId,
-      vendorId,
-      status: 'Pending',  // default status
-    });
-
-    const savedGuest = await newGuest.save();
+    const { userId, vendorId } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(vendorId)) {
+      return res.status(400).json({ message: "Invalid userId or vendorId" });
+    }
+    const savedGuest = await new GuestList({ userId, vendorId, status: "Pending" }).save();
     res.status(201).json(savedGuest);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error adding guest" });
   }
 };
 
-// Update a guest list entry (status, etc.)
-const updateGuestList = async (req, res) => {
-  const { userId, vendorId, status } = req.body;
-
-  if (!userId || !vendorId || !status) {
-    return res.status(400).json({ message: 'userId, vendorId, and status are required' });
-  }
-
-  try {
-    const updatedGuest = await GuestList.findOneAndUpdate(
-      { userId, vendorId },
-      { status },
-      { new: true }  // return updated record
-    );
-
-    if (!updatedGuest) {
-      return res.status(404).json({ message: 'Guest not found' });
-    }
-
-    res.status(200).json(updatedGuest);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Remove a guest from the list
+// ❌ Remove from Guest List
 const removeFromGuestList = async (req, res) => {
-  const { vendorId } = req.params;  // Get vendorId from URL
-
   try {
-    const removedGuest = await GuestList.findOneAndDelete({ vendorId });
-
-    if (!removedGuest) {
-      return res.status(404).json({ message: 'Guest not found' });
+    const { vendorId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+      return res.status(400).json({ message: "Invalid vendorId" });
     }
-
-    res.status(200).json({ message: 'Guest removed from list', removedGuest });
+    const removedGuest = await GuestList.findOneAndDelete({ vendorId });
+    res.status(removedGuest ? 200 : 404).json(removedGuest ? { message: "Guest removed", removedGuest } : { message: "Guest not found" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error removing guest" });
   }
 };
 
-
-// Check order status
+// 📦 Check Order Status
 const checkOrderStatus = async (req, res) => {
-  const { orderId } = req.query;
-
   try {
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    const { orderId } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ message: "Invalid orderId" });
     }
-
-    res.status(200).json(order);
+    const order = await Order.findById(orderId);
+    res.status(order ? 200 : 404).json(order || { message: "Order not found" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error fetching order status" });
   }
 };
 
 module.exports = {
+  viewAllProducts,
+  getUserCart,
   addToCart,
   removeFromCart,
-  viewCart,
-  makePayment,
-  cancelOrder,
   addToGuestList,
-  updateGuestList,
   removeFromGuestList,
   checkOrderStatus,
 };

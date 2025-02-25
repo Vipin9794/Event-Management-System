@@ -1,31 +1,44 @@
-const express = require('express');
+const express = require("express");
 const {
   insertProduct,
   deleteProduct,
-  addNewProduct,
-  getProductStatus,
+  updateProduct,
   viewProduct,
+  viewProductId,
   userRequest,
-} = require('../controllers/vendorController');
+} = require("../controllers/vendorController");
+const {  
+  getVendorOrders, 
+  updateVendorResponse, 
+  updateOrderStatus 
+} = require("../controllers/orderController");
+
 
 const router = express.Router();
 
 // Insert product into vendor's list
-router.post('/insert-product', insertProduct);
+router.post("/insert-product", insertProduct);
 
 // Delete product from vendor's list
-router.delete('/delete-product/:productId', deleteProduct);
+router.delete("/delete-product/:productId", deleteProduct);
+router.put("/update-product/:productId", updateProduct);
 
-// Add new product for the vendor
-router.post('/add-new-product', addNewProduct);
 
-// Get product status (available, out of stock, etc.)
-router.get('/product-status', getProductStatus);
+router.get("/vendor-orders", getVendorOrders);
+// ✅ **3. Vendor accepts/rejects an order**
+router.put("/vendor-response", updateVendorResponse);
+
+// 🚚 **4. Vendor updates order status**
+router.put("/update-status", updateOrderStatus);
+
 
 // View a product (details)
-router.get('/view-product', viewProduct);
+router.get("/view-product", viewProduct);
+router.get("/view-product/:productId", viewProductId);
+
+
 
 // Handle user product requests
-router.post('/user-request', userRequest);
+router.post("/user-request", userRequest);
 
 module.exports = router;

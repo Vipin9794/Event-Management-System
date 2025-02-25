@@ -20,7 +20,18 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'vendor', 'admin'],
     default: 'user',
   },
+  cart: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",  // 🛠 Ensure `Product` model is referenced correctly
+      },
+      quantity: { type: Number, default: 1 },
+    },
+  ],
 });
+
+
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {

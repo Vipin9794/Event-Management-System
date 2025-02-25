@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const userRoutes = require('./routes/userRoutes');
 const Admin =  require("./routes/adminRoutes");
 const authRoutes = require('./routes/authRoutes');
+const vendorRoutes = require("./routes/vendorRoutes");
 
 dotenv.config();
 const app = express();
@@ -20,8 +21,8 @@ connectDB();
 // app.use("/api/user", require("./routes/userRoutes"));
 app.use('/api/auth', authRoutes);
 app.use("/api/users", userRoutes);
- app.use("/api/vendors", require("./routes/vendorRoutes"));
- app.use("/api/products", require("./routes/productRoutes"));
+ app.use("/api/vendors" , vendorRoutes)
+ //app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/admin",Admin);
 
 const PORT =  5000;

@@ -1,6 +1,7 @@
 
 // Importing necessary dependencies
 import React, { } from "react";
+
 import { 
   
   RouterProvider,
@@ -20,12 +21,17 @@ import ErrorPage from "./components/ErrorPage"; // Import the ErrorPage componen
 import Cart from "./components/users/Cart";
 import GuestList from "./components/users/GuestList";
 import UserMainPage from "./components/users/UserMainPage";
-import OrderStatus from "./components/users/OrderStatus";
+import MyOrders from "./components/users/MyOrders";
+import OrderPopup from "./components/users/OrderPopup";
 import Payment from "./components/users/Payment";
 import Vendor from "./components/users/Vendor";
 import Cancel from "./components/users/Cancel";
 import Home from "./components/vender/Home";
-
+import InsertItem from "./components/vender/InsertItem";
+import UpdateProductForm from "./components/vender/UpdateProductForm";
+//import DeleteItem from "./components/vender/DeleteItem";
+import ViewProduct from "./components/vender/ViewProduct";
+import OrdersDashboard from "./components/vender/OrdersDashboard";
 
 
 
@@ -91,8 +97,12 @@ function App() {
       element: < GuestList/>,
     },
     {
-      path: "/orderStatus",
-      element: <OrderStatus/>,
+      path: "/myOrders",
+      element: <MyOrders/>,
+    },
+    {
+      path: "/order-summary",
+      element: <OrderPopup/>
     },
     {
       path: "/payment",
@@ -111,6 +121,22 @@ function App() {
     {
       path: "/vendorHome",
       element: <Home/>,
+    },
+    {
+      path: "/insert-item",
+      element: <InsertItem/>
+    },
+    {
+      path: "/update-product/:productId",
+      element: <UpdateProductForm/>
+    },
+    {
+      path: "/view-product",
+      element: <ViewProduct/>
+    },
+    {
+      path: "/view-orders",
+      element: <OrdersDashboard/>
     },
     
     {

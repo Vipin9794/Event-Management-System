@@ -1,19 +1,23 @@
+
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, Col, Row } from 'react-bootstrap';
 import { LOG_API_END_POINT } from '../../utils/Constrient';
-import { useNavigate ,Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    role: '',
   });
-  const [role, setRole] = useState('');
+
   const [message, setMessage] = useState('');
   const [token, setToken] = useState('');
-  const navigate = useNavigate(); // Use hook for navigation
+  const navigate = useNavigate();
 
+  // Handle input changes (email, password, role)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -22,38 +26,66 @@ const Login = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Role:', role);
+    console.log("Submitting Form Data:", formData);
 
     try {
       const response = await axios.post(LOG_API_END_POINT, formData);
-      setMessage(response.data.message); // Show success message
-      setToken(response.data.token); // Store JWT token
-      localStorage.setItem('token', response.data.token); // Save token in localStorage
-      console.log('Role:', role);
-      // Redirect to the respective dashboard based on the selected role
-      if (role === 'vendor') {
-        navigate('/vendorHome'); // Use navigate for redirection
-      } else if (role === 'user') {
-        navigate('/userHome'); // Use navigate for redirection
-      } else if (role === 'admin') {
-        navigate('/adminHome'); // Use navigate for redirection
-      } else {
-        alert('Please select a valid role.'); // Show alert if no role is selected
+      console.log("🔥 Full Response from Server:", response);
+
+      const { userId, role, token, vendorId } = response.data;
+
+      // Ensure userId or vendorId exists
+      if (!userId) {
+        console.error("❌ Login failed! No userId received.");
+        alert("Login failed! No userId received.");
+        return;
+      }
+
+      // Store necessary data in localStorage
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", role);
+      localStorage.setItem("token", token);
+
+      // Store vendorId only if the user is a vendor
+      if (role === "vendor" && vendorId) {
+        localStorage.setItem("vendorId", vendorId);
+        console.log("Vendor ID stored:", vendorId);
+      }
+
+      setMessage("Login successful");
+      setToken(token);
+
+      // Redirect user based on role
+      switch (role) {
+        case 'vendor':
+          navigate('/vendorHome');
+          break;
+        case 'user':
+          navigate('/userHome');
+          break;
+        case 'admin':
+          navigate('/adminHome');
+          break;
+        default:
+          alert('Invalid role selected.');
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || 'An error occurred'); // Handle error properly
+      setMessage(error.response?.data?.message || 'An error occurred');
+      console.log("❌ API Error:", error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div className="container mt-5 w-50 bg-secondary ">
+    <div className="container mt-5 w-50 bg-secondary p-4">
       <Row className="justify-content-center">
         <Col md={6}>
           <h2>Login User</h2>
           {message && <div className="alert alert-info">{message}</div>}
           <form onSubmit={handleSubmit}>
+            {/* Email Field */}
             <div className="mb-3">
               <label htmlFor="email" className="form-label">Email</label>
               <input
@@ -66,6 +98,8 @@ const Login = () => {
                 required
               />
             </div>
+
+            {/* Password Field */}
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
               <input
@@ -78,30 +112,38 @@ const Login = () => {
                 required
               />
             </div>
+
+            {/* Role Selection */}
             <Form.Group controlId="formRole" className="mt-3">
               <Form.Label>Role</Form.Label>
-              <Form.Select value={role} onChange={(e) => setRole(e.target.value)} required>
+              <Form.Select name="role" value={formData.role} onChange={handleChange} required>
                 <option value="">Select Role</option>
                 <option value="vendor">Vendor</option>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </Form.Select>
             </Form.Group>
+
             <br />
-            <button type="submit" className="btn btn-primary">Login</button>
-            <span className="test-sm ">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600">
-              Signup
-            </Link>
-          </span>
-          <div className="mt-3">
-            <Link to="/forgot-password" className="text-blue-600">
-              Forgot Password?
-            </Link>
+            <button type="submit" className="btn btn-primary w-100">Login</button>
+
+            {/* Signup Link */}
+            <div className="mt-3">
+              <span className="test-sm">
+                Don't have an account?{" "}
+                <Link to="/signup" className="text-blue-600">Signup</Link>
+              </span>
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="mt-3">
+              <Link to="/forgot-password" className="text-blue-600">
+                Forgot Password?
+              </Link>
             </div>
           </form>
 
+          {/* JWT Token Display (for debugging) */}
           {token && <div className="mt-3">JWT Token: {token}</div>}
         </Col>
       </Row>
@@ -110,3 +152,4 @@ const Login = () => {
 };
 
 export default Login;
+

@@ -4,3 +4,7 @@ export const ADDMEM_API_END_POINT="http://localhost:5000/api/admin/add-membershi
 export const UPDMEM_API_END_POINT="http://localhost:5000/api/admin/update-membership";
 export const ADD_UPD_VENDOR_API_END_POINT="http://localhost:5000/api/admin/add-update-vendor";
 export const ADD_UPD_USER_API_END_POINT="http://localhost:5000/api/admin/add-update-user";
+export const Ins_Itm_API_END_POINT="http://localhost:5000/api/vendors/insert-product";
+export const VIEW_PRO_API_END_POINT="http://localhost:5000/api/vendors/view-product";
+export const DEL_PRO_API_END_POINT="http://localhost:5000/api/vendors/delete-product";
+export const UPDATE_PRO_API_END_POINT="http://localhost:5000/api/vendors/update-product/:productId";
