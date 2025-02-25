@@ -142,15 +142,15 @@ function UserMainPage() {
         <button className="btn btn-primary mb-3" onClick={() => navigate("/cart")}>
           View Cart
         </button>
-        <button className="btn btn-warning mb-3" onClick={() => navigate("/guestList")}>
+        {/* <button className="btn btn-warning mb-3" onClick={() => navigate("/guestList")}>
           Guest List
-        </button>
-        <button className="btn btn-success mb-3" onClick={() => navigate("/order-status")}>
+        </button> */}
+        <button className="btn btn-success mb-3" onClick={() => navigate("/user-orders")}>
           Track Order
         </button>
-        <button className="btn btn-info" onClick={() => navigate("/payment")}>
+        {/* <button className="btn btn-info" onClick={() => navigate("/payment")}>
           Make Payment
-        </button>
+        </button> */}
       </div>
 
       {/* Products List - 3 per row */}

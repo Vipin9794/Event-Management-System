@@ -19,11 +19,10 @@ import UserManagement from "./components/admin/UserManagement";
 import AdminMainPage from "./components/admin/AdminMainPage";
 import ErrorPage from "./components/ErrorPage"; // Import the ErrorPage component
 import Cart from "./components/users/Cart";
-import GuestList from "./components/users/GuestList";
+//import GuestList from "./components/users/GuestList";
 import UserMainPage from "./components/users/UserMainPage";
-import MyOrders from "./components/users/MyOrders";
 import OrderPopup from "./components/users/OrderPopup";
-import Payment from "./components/users/Payment";
+//import Payment from "./components/users/Payment";
 import Vendor from "./components/users/Vendor";
 import Cancel from "./components/users/Cancel";
 import Home from "./components/vender/Home";
@@ -32,6 +31,7 @@ import UpdateProductForm from "./components/vender/UpdateProductForm";
 //import DeleteItem from "./components/vender/DeleteItem";
 import ViewProduct from "./components/vender/ViewProduct";
 import OrdersDashboard from "./components/vender/OrdersDashboard";
+import UserOrders from "./components/users/UserOrders";
 
 
 
@@ -92,22 +92,22 @@ function App() {
       path: "/cart",
       element: <Cart/>,
     },
+    // {
+    //   path: "/guestList",
+    //   element: < GuestList/>,
+    // },
     {
-      path: "/guestList",
-      element: < GuestList/>,
-    },
-    {
-      path: "/myOrders",
-      element: <MyOrders/>,
+      path: "/user-orders",
+      element: <UserOrders/>,
     },
     {
       path: "/order-summary",
       element: <OrderPopup/>
     },
-    {
-      path: "/payment",
-      element: <Payment/>,
-    },
+    // {
+    //   path: "/payment",
+    //   element: <Payment/>,
+    // },
     {
       path: "/vendor",
       element: <Vendor/>,

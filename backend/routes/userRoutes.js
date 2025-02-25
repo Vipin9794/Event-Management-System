@@ -3,12 +3,11 @@ const {
   addToCart,
   addToGuestList,
   removeFromGuestList,
-  checkOrderStatus,
   viewAllProducts,
   getUserCart,
   removeFromCart,  // ✅ Added Product Route
 } = require("../controllers/userController");
-const { placeOrder } = require("../controllers/orderController");
+const { placeOrder,getUserOrders, } = require("../controllers/orderController");
 
 
 const router = express.Router();
@@ -32,8 +31,8 @@ router.delete("/guest-list/remove/:guestId", removeFromGuestList);
 router.post("/place-order", placeOrder);
 // router.get("/my-orders/:userId", orderController.getUserOrders);
 
-
+router.get("/user-orders", getUserOrders);
 // Order Status Route
-router.get("/order/status/:orderId", checkOrderStatus);
+//router.get("/order/status/:orderId", checkOrderStatus);
 
 module.exports = router;
