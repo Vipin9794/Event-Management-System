@@ -13,6 +13,8 @@ const Login = () => {
     role: '',
   });
 
+
+  const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
   const [token, setToken] = useState('');
   const navigate = useNavigate();
@@ -35,26 +37,38 @@ const Login = () => {
       const response = await axios.post(LOG_API_END_POINT, formData);
       console.log("🔥 Full Response from Server:", response);
 
-      const { userId, role, token, vendorId } = response.data;
+      const { userId , role, token } = response.data;
+      console.log("Vendor ID from response:", response.data.vendorId);
 
       // Ensure userId or vendorId exists
-      if (!userId) {
+      if (!userId ) {
         console.error("❌ Login failed! No userId received.");
         alert("Login failed! No userId received.");
         return;
       }
 
       // Store necessary data in localStorage
-      localStorage.setItem("userId", userId);
+      localStorage.setItem("userId", userId );
       localStorage.setItem("role", role);
       localStorage.setItem("token", token);
 
       // Store vendorId only if the user is a vendor
-      if (role === "vendor" && vendorId) {
-        localStorage.setItem("vendorId", vendorId);
-        console.log("Vendor ID stored:", vendorId);
+      if (role === "vendor"  ) {
+        const newVendorId = userId;
+        localStorage.setItem("vendorId", newVendorId);
+       // localStorage.setItem("vendorId", userId);
+        console.log("✅ Vendor ID Stored:", newVendorId);
+    //     localStorage.setItem("vendorId", vendorId);
+    //     console.log("✅ Vendor ID Stored:", vendorId);
+    //     localStorage.setItem("vendorId", user.vendorId);
+     
+    // //    console.log("Vendor ID stored:", vendorId);
+    //     const newVendorId = response.data.vendorId;
+        
+    //     localStorage.setItem("vendorId", newVendorId);
+    //     console.log("Vendor ID:", newVendorId);
       }
-
+      setUser(response.data.user); // ✅ user को update किया
       setMessage("Login successful");
       setToken(token);
 

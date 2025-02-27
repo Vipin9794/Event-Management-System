@@ -9,19 +9,51 @@ const ViewProduct = () => {
   const [status, setStatus] = useState("");
  
 
+  //const vendorId = localStorage.getItem("vendorId");
+ 
   useEffect(() => {
     fetchProducts();
+    
   }, []);
 
   // Fetch products from backend
+  // const fetchProducts = async () => {
+  //   try {
+  //     const vendorId = localStorage.getItem("vendorId"); // ✅ Vendor ID from storage
+
+  //   if (!vendorId) {
+  //     console.error("Vendor ID missing!");
+  //     return;
+  //   }
+  //     const response = await axios.get(`${VIEW_PRO_API_END_POINT}?vendorId=${vendorId}`);
+  //     setProducts(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching products:", error);
+  //   }
+  // };
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(VIEW_PRO_API_END_POINT);
+      const vendorId = localStorage.getItem("vendorId"); // 🔹 Vendor ID को Local Storage से लो
+
+      if (!vendorId) {
+        console.log("🚨 Vendor ID not found. Please login again.");
+        return;
+      }
+
+  
+      const response = await axios.get(`${VIEW_PRO_API_END_POINT}?vendorId=${vendorId}`);
+        // headers: {
+        //   Authorization: `Bearer ${token}`, // ✅ Token as Header
+        // },
+      //});
       setProducts(response.data);
+     // setLoading(false);
+     // setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
+  
 
   // Handle product deletion
   const handleDelete = async (productId) => {

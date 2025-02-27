@@ -26,7 +26,7 @@ const cartSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true, default: 0 },
   paymentMethod: {
     type: String,
-    required: true,
+   // required: true,
     enum: ["COD", "UPI", ],//"Card", "Net Banking"
   },
 });

@@ -8,7 +8,7 @@ const {
   removeFromCart,  // ✅ Added Product Route
 } = require("../controllers/userController");
 const { placeOrder,getUserOrders, } = require("../controllers/orderController");
-
+//const authenticate = require("../middleware/authenticate");
 
 const router = express.Router();
 
@@ -17,10 +17,11 @@ router.get("/products", viewAllProducts);  //  Fetch All Products
 
 // 🛒 Add to Cart Route (POST)
 router.post("/cart/add", addToCart);
-router.delete("/cart/remove", removeFromCart);
+
 
 // 🛒 Get User's Cart Route (GET)
 router.get("/cart", getUserCart);
+router.delete("/cart/:productId", removeFromCart);
 
 
 // Guest List Routes

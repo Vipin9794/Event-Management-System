@@ -89,16 +89,29 @@ function UserMainPage() {
 
   useEffect(() => {
     // Fetch products from backend
+   
+    
     const fetchProducts = async () => {
+    //   const token = localStorage.getItem("token"); // ✅ Fetch token from localStorage
+
+    // if (!token) {
+    //   toast.error("❌ Unauthorized! Please log in.");
+    //   navigate("/login");
+    //   return;
+    // }
+
       try {
-        const response = await axios.get("http://localhost:5000/api/vendors/view-product");
+        const response = await axios.get("http://localhost:5000/api/users/products");//, {
+          // headers: {
+          //   Authorization: `Bearer ${token}`, // ✅ Attach token
+          // },});
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
     fetchProducts();
-  }, []);
+  }, [navigate]);
 
   // ✅ Function to Add Product to Cart
   const handleAddToCart = async (productId) => {
@@ -113,12 +126,17 @@ function UserMainPage() {
 
     setLoading(true);
     try {
-       await axios.post("http://localhost:5000/api/users/cart/add", {
+      const response =await axios.post("http://localhost:5000/api/users/cart/add", {
         userId,
         vendorId,
         productId,
         quantity: 1, // Default quantity 1
       });
+
+      console.log("Cart Response After Add:", response.data);
+      //console.log("API Response After Add:", response.data); // ✅ Response check karo
+      console.log("Updated Cart:", response.data.cart); // ✅ Yeh confirm karo
+  
 
       toast.success("🛒 Product added to cart!");
      // toast.success("🛒 Product added to cart!");

@@ -24,7 +24,6 @@ import UserMainPage from "./components/users/UserMainPage";
 import OrderPopup from "./components/users/OrderPopup";
 //import Payment from "./components/users/Payment";
 import Vendor from "./components/users/Vendor";
-import Cancel from "./components/users/Cancel";
 import Home from "./components/vender/Home";
 import InsertItem from "./components/vender/InsertItem";
 import UpdateProductForm from "./components/vender/UpdateProductForm";
@@ -112,10 +111,7 @@ function App() {
       path: "/vendor",
       element: <Vendor/>,
     },
-    {
-      path: "/cancel",
-      element: <Cancel/>,
-    },
+    
 
     //vendor
     {
